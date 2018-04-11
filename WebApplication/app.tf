@@ -14,7 +14,6 @@ resource "aws_s3_bucket" "s3hosting" {
   website {
     index_document = "index.html"
   }
-
 }
 
 # ## PERMISSIONS
@@ -47,7 +46,7 @@ data "aws_iam_policy_document" "allow_read_policy" {
     ]
 
     resources = [
-      "${aws_s3_bucket.s3hosting.arn}/*"
+      "${aws_s3_bucket.s3hosting.arn}/*",
     ]
   }
 }
