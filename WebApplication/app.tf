@@ -10,11 +10,16 @@ resource "aws_s3_bucket" "s3hosting" {
   provisioner "local-exec" {
     command = "aws --profile personal s3 sync 1_StaticWebHosting/website s3://${self.bucket}"
   }
+
+  website {
+    index_document = "index.html"
+  }
+
 }
 
 # ## PERMISSIONS
 
-# # Role policy definition
+# Role policy definition
 # data "aws_iam_policy_document" "notify_lamdba_policy" {
 #   statement {
 #     effect  = "Allow"
@@ -27,18 +32,31 @@ resource "aws_s3_bucket" "s3hosting" {
 #   }
 # }
 
-# # S3 policy definition
-# data "aws_iam_policy_document" "notify_s3_policy" {
-#   statement {
-#     effect = "Allow"
+# S3 policy definition
+data "aws_iam_policy_document" "allow_read_policy" {
+  statement {
+    effect = "Allow"
 
-#     actions = [
-#       "s3:GetObject",
-#       "s3:ListBucket",
-#     ]
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
 
-#     resources = [
-#       "${aws_s3_bucket.upload.arn}",
-#     ]
-#   }
-# }
+    actions = [
+      "s3:GetObject",
+    ]
+
+    resources = [
+      "${aws_s3_bucket.s3hosting.arn}/*"
+    ]
+  }
+}
+
+resource "aws_s3_bucket_policy" "allow_read_policy" {
+  bucket = "${aws_s3_bucket.s3hosting.id}"
+  policy = "${data.aws_iam_policy_document.allow_read_policy.json}"
+}
+
+output "s3-url" {
+  value = "${aws_s3_bucket.s3hosting.website_endpoint}"
+}
