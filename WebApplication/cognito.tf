@@ -23,3 +23,21 @@ resource "aws_cognito_user_pool" "pool" {
     },
   ]
 }
+
+
+resource "aws_cognito_user_pool_client" "client" {
+  name = "client"
+
+  user_pool_id = "${aws_cognito_user_pool.pool.id}"
+
+}
+
+data "template_file" "init" {
+  template = "${file("1_StaticWebHosting/website/js/config.js.tpl")}"
+
+  vars {
+    POOL_ID = "${aws_cognito_user_pool.pool.id}"
+    POOL_CLIENT_ID = "${aws_cognito_user_pool_client.client.id}"
+    REGION = "${var.region}"
+  }
+}
