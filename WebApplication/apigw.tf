@@ -49,7 +49,7 @@ resource "aws_lambda_permission" "apigw_lambda" {
 
 # CORS shit
 module "MyResourceCors" {
-  source = "github.com/carrot/terraform-api-gateway-cors-module"
+  source = "github.com/cgarciaarano/terraform-api-gateway-cors-module"
   resource_id = "${aws_api_gateway_resource.ride.id}"
   rest_api_id = "${aws_api_gateway_rest_api.site_api.id}"
 }
