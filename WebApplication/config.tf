@@ -5,3 +5,5 @@ provider "aws" {
 }
 
 provider "archive" {}
+
+variable account { default = 745902678934 }
