@@ -27,7 +27,6 @@ resource "aws_api_gateway_method" "post_ride" {
 }
 
 # Lamdba integration
-
 resource "aws_api_gateway_integration" "lambda_ride_integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.site_api.id}"
   resource_id             = "${aws_api_gateway_resource.ride.id}"
@@ -69,3 +68,30 @@ resource "aws_api_gateway_deployment" "api_deploy" {
   rest_api_id = "${aws_api_gateway_rest_api.site_api.id}"
   stage_name  = "prod"
 }
+
+# OAuth shit
+resource "aws_api_gateway_authorizer" "api_oauth_authorizer" {
+  name                   = "WildRydes_OAuth"
+  rest_api_id            = "${aws_api_gateway_rest_api.site_api.id}"
+  type = "TOKEN"
+  authorizer_uri = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${aws_lambda_function.list_rides_lambda.arn}/invocations"
+}
+
+# resource "aws_api_gateway_method" "get_ride" {
+#   rest_api_id   = "${aws_api_gateway_rest_api.site_api.id}"
+#   resource_id   = "${aws_api_gateway_resource.ride.id}"
+#   http_method   = "GET"
+#   authorization = "NONE"
+#   authorizer_id = "${aws_api_gateway_authorizer.api_oauth_authorizer.id}"
+# }
+
+
+# resource "aws_api_gateway_integration" "lambda_list_integration" {
+#   rest_api_id             = "${aws_api_gateway_rest_api.site_api.id}"
+#   resource_id             = "${aws_api_gateway_resource.ride.id}"
+#   http_method             = "${aws_api_gateway_method.get_ride.http_method}"
+#   integration_http_method = "GET"
+#   type                    = "AWS_PROXY"
+#   uri                     = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${aws_lambda_function.list_rides_lambda.arn}/invocations"
+# }
+
